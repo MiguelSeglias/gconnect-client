@@ -12,8 +12,11 @@ It logs in via Garmin SSO (with two-step MFA support), manages OAuth tokens thro
 pluggable token store, and reads activities and a few daily health metrics with runtime
 validation.
 
-**Status:** version 0.1.0. Live login: **not yet verified against a real account.** Everything
-is tested against synthetic fixtures only (see [Live verification](#live-verification)).
+**Status:** version 0.1.0. Verified against a real account on 5 October 2026: login (mobile SSO
+and DI OAuth2 token exchange), token storage, profile and activity listing. The resting HR and
+VO₂ max endpoints answered without errors, but the account had no values in the tested range, so
+their value parsing is verified against synthetic fixtures only; sleep, HRV, activity details and
+file downloads have not been run live yet (see [Live verification](#live-verification)).
 
 - [Install](#install)
 - [Quick start](#quick-start)
@@ -290,6 +293,8 @@ read -r GARMIN_USERNAME && read -rs GARMIN_PASSWORD && export GARMIN_USERNAME GA
 export GARMIN_TOKEN_FILE="$HOME/.config/gconnect/garmin.tokens.json"
 bun run test:live          # prompts for an MFA code on the terminal if needed
 # or: GARMIN_MFA_CODE=123456 bun run test:live
+# Response structure only (keys, types, array lengths; no values), reusing stored tokens:
+# GARMIN_PROBE=1 GARMIN_TOKEN_FILE=… bun run test:live
 unset GARMIN_USERNAME GARMIN_PASSWORD
 ```
 
@@ -300,7 +305,8 @@ unset GARMIN_USERNAME GARMIN_PASSWORD
 
 ## Known limitations
 
-- Live login is unverified, and Node's TLS fingerprint may be blocked on SSO (see above).
+- Wellness value parsing (resting HR, VO₂ max, sleep, HRV) is not yet verified with live data, and
+  Node's TLS fingerprint may be blocked on SSO (see above).
 - The JWT_WEB cookie fallback of the Python library is not ported. If no DI client id accepts
   the ticket, you get `TokenExchangeError`.
 - The VO₂max (`maxmet`) and sleep-stats response shapes are not typed upstream and are only

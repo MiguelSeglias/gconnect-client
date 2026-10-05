@@ -10,6 +10,7 @@ import { createReadStream } from 'node:fs';
 import { createInterface } from 'node:readline/promises';
 import { describe, expect, it } from 'vitest';
 import { FileTokenStore, GarminConnectClient, MemoryTokenStore, type TokenStore } from '../../src';
+import { CONNECT_API_ORIGIN, nativeHeaders } from '../../src/auth/constants';
 
 const enabled = process.env.GARMIN_LIVE === '1';
 
@@ -78,6 +79,68 @@ describe.runIf(enabled)('live Garmin Connect (read-only)', () => {
     }
 
     expect(rhr).toHaveLength(7);
+  });
+});
+
+/**
+ * Structure of a JSON value with every value removed: object keys, value types, array lengths
+ * and the merged shape of array elements. Strings that look like dates show only their format.
+ * Safe to share: no numbers, names, ids or dates are printed.
+ */
+function shape(value: unknown, depth = 0): unknown {
+  if (depth > 6) return '…';
+  if (value === null) return 'null';
+  if (Array.isArray(value)) {
+    const merged: Record<string, Set<string>> = {};
+    for (const item of value.slice(0, 50)) {
+      const s = JSON.stringify(shape(item, depth + 1));
+      (merged['items'] ??= new Set()).add(s);
+    }
+    return {
+      array: value.length,
+      items: [...(merged['items'] ?? [])].map((s) => JSON.parse(s) as unknown),
+    };
+  }
+  if (typeof value === 'object') {
+    return Object.fromEntries(
+      Object.keys(value).map((k) => [k, shape((value as Record<string, unknown>)[k], depth + 1)]),
+    );
+  }
+  if (typeof value === 'string') {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return 'date YYYY-MM-DD';
+    if (/^\d{4}-\d{2}-\d{2}T/.test(value)) return 'datetime';
+    return 'string';
+  }
+  return typeof value;
+}
+
+describe.runIf(enabled && process.env.GARMIN_PROBE === '1')('live response shapes (probe)', () => {
+  it('prints the structure of the wellness responses, without values', async () => {
+    const tokenFile = process.env.GARMIN_TOKEN_FILE;
+    if (!tokenFile) throw new Error('Run the live test once with GARMIN_TOKEN_FILE first');
+    const store = new FileTokenStore(tokenFile);
+    const client = new GarminConnectClient({ tokenStore: store });
+    const profile = await client.getUserProfile(); // also refreshes the token if needed
+    const tokens = await store.load();
+    if (tokens === null) throw new Error('No stored tokens');
+    const from = isoDay(-29);
+    const to = isoDay(0);
+    const get = async (path: string): Promise<{ status: number; body: unknown }> => {
+      const res = await fetch(`${CONNECT_API_ORIGIN}${path}`, {
+        headers: nativeHeaders({
+          Authorization: `Bearer ${tokens.accessToken}`,
+          Accept: 'application/json',
+        }),
+      });
+      const text = await res.text();
+      return { status: res.status, body: text === '' ? null : (JSON.parse(text) as unknown) };
+    };
+    const rhr = await get(
+      `/userstats-service/wellness/daily/${encodeURIComponent(profile.displayName)}?fromDate=${from}&untilDate=${to}&metricId=60`,
+    );
+    report(`resting HR: HTTP ${rhr.status} shape ${JSON.stringify(shape(rhr.body))}`);
+    const vo2 = await get(`/metrics-service/metrics/maxmet/daily/${isoDay(-27)}/${to}`);
+    report(`VO2max: HTTP ${vo2.status} shape ${JSON.stringify(shape(vo2.body))}`);
   });
 });
 

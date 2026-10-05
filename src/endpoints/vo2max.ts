@@ -34,6 +34,12 @@ export function extractVo2Max(body: unknown): Map<string, number> {
   if (body === undefined || body === null) return values;
   if (isRecord(body) && Object.keys(body).length === 0) return values;
   if (!Array.isArray(body)) throw new UnsupportedResponseError(VO2_ENDPOINT);
+  // Entries that carry none of the known keys mean the shape changed: fail loudly instead of
+  // reporting every day as not measured.
+  const known = ['generic', 'cycling', 'calendarDate'];
+  if (body.length > 0 && body.every((e) => isRecord(e) && !known.some((k) => k in e))) {
+    throw new UnsupportedResponseError(VO2_ENDPOINT, 'No known keys in VO2max entries');
+  }
   for (const entry of body) {
     if (!isRecord(entry)) throw new UnsupportedResponseError(VO2_ENDPOINT);
     const generic = entry.generic;

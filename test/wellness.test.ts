@@ -77,6 +77,21 @@ describe('getRestingHeartRate', () => {
     expect(days.every((d) => d.status === 'not_measured' && d.value === null)).toBe(true);
   });
 
+  it('rejects an unrecognised shape instead of reporting every day as not measured', async () => {
+    const { transport, client } = setup();
+    transport.on('GET', RHR, json({ values: [{ day: '2026-01-01', rhr: 48 }] }));
+    await expect(client.getRestingHeartRate(range)).rejects.toBeInstanceOf(
+      UnsupportedResponseError,
+    );
+  });
+
+  it('treats an empty object or a metrics map without the key as no data', async () => {
+    const { transport, client } = setup();
+    transport.on('GET', RHR, json({ allMetrics: { metricsMap: {} } }));
+    const days = await client.getRestingHeartRate(range);
+    expect(days.every((d) => d.status === 'not_measured')).toBe(true);
+  });
+
   it('validates ranges', async () => {
     const { client } = setup();
     await expect(
@@ -128,6 +143,12 @@ describe('getVo2Max', () => {
   ])('throws UnsupportedResponseError for %s', async (_label, body) => {
     const { transport, client } = setup();
     transport.on('GET', /maxmet/, json(body));
+    await expect(client.getVo2Max(range)).rejects.toBeInstanceOf(UnsupportedResponseError);
+  });
+
+  it('rejects entries without any known key instead of reading them as no data', async () => {
+    const { transport, client } = setup();
+    transport.on('GET', /maxmet/, json([{ running: { date: '2026-01-01', vo2: 51 } }]));
     await expect(client.getVo2Max(range)).rejects.toBeInstanceOf(UnsupportedResponseError);
   });
 
