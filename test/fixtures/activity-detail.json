@@ -1,0 +1,22 @@
+{
+  "activityId": 90000000001,
+  "activityName": "Morning Run",
+  "description": "Synthetic test activity",
+  "activityTypeDTO": { "typeKey": "running" },
+  "summaryDTO": {
+    "startTimeLocal": "2026-01-10T07:30:00.0",
+    "startTimeGMT": "2026-01-10T06:30:00.0",
+    "distance": 10000.5,
+    "duration": 3000.25,
+    "movingDuration": 2950.0,
+    "elapsedDuration": 3100.0,
+    "elevationGain": 55.0,
+    "elevationLoss": 54.0,
+    "averageSpeed": 3.33,
+    "maxSpeed": 4.5,
+    "averageHR": 150.0,
+    "maxHR": 175.0,
+    "calories": 600.0
+  },
+  "metadataDTO": { "manualActivity": false, "hasPolyline": true }
+}

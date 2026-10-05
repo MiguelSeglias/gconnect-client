@@ -1,0 +1,33 @@
+[
+  {
+    "activityId": 90000000001,
+    "activityName": "Morning Run",
+    "startTimeLocal": "2026-01-10 07:30:00",
+    "startTimeGMT": "2026-01-10 06:30:00",
+    "activityType": { "typeId": 1, "typeKey": "running", "parentTypeId": 17 },
+    "distance": 10000.5,
+    "duration": 3000.25,
+    "elapsedDuration": 3100.0,
+    "movingDuration": 2950.0,
+    "elevationGain": 55.0,
+    "elevationLoss": 54.0,
+    "averageSpeed": 3.33,
+    "maxSpeed": 4.5,
+    "averageHR": 150.0,
+    "maxHR": 175.0,
+    "calories": 600.0,
+    "manualActivity": false,
+    "someNewGarminField": { "nested": true }
+  },
+  {
+    "activityId": 90000000002,
+    "activityName": "Easy Ride",
+    "startTimeLocal": "2026-01-09 17:00:00",
+    "startTimeGMT": "2026-01-09 16:00:00",
+    "activityType": { "typeKey": "cycling" },
+    "distance": 25000,
+    "duration": 4000,
+    "averageHR": null,
+    "manualActivity": false
+  }
+]

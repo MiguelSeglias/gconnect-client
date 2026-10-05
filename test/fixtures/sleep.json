@@ -1,0 +1,18 @@
+{
+  "overallStats": { "averageSleepSeconds": 27000 },
+  "individualStats": [
+    {
+      "calendarDate": "2026-01-01",
+      "values": {
+        "totalSleepTimeInSeconds": 27000,
+        "deepTime": 5400,
+        "lightTime": 14400,
+        "remTime": 6000,
+        "awakeTime": 1200,
+        "sleepScore": 81,
+        "sleepScoreQuality": "GOOD"
+      }
+    },
+    { "calendarDate": "2026-01-02", "values": {} }
+  ]
+}

@@ -1,0 +1,10 @@
+node_modules/
+dist/
+coverage/
+.cache/
+.env
+.env.*
+*.tokens.json
+garmin_tokens.json
+*.log
+.DS_Store

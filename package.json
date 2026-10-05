@@ -1,0 +1,76 @@
+{
+  "name": "gconnect-client",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Unofficial, read-only Garmin Connect client for Node.js (TypeScript). Not affiliated with Garmin.",
+  "license": "MIT",
+  "author": "Miguel Seglias",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MiguelSeglias/gconnect-client.git"
+  },
+  "homepage": "https://github.com/MiguelSeglias/gconnect-client#readme",
+  "bugs": {
+    "url": "https://github.com/MiguelSeglias/gconnect-client/issues"
+  },
+  "keywords": [
+    "garmin",
+    "garmin-connect",
+    "fitness",
+    "activities",
+    "health",
+    "unofficial",
+    "typescript",
+    "read-only"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:live": "GARMIN_LIVE=1 vitest run --config vitest.live.config.ts",
+    "lint": "eslint . && prettier --check .",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "prepublishOnly": "bun run lint && bun run typecheck && bun run test && bun run build"
+  },
+  "dependencies": {
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.20.5",
+    "eslint": "^10.12.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.9",
+    "tsup": "^8.5.1",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.71.1",
+    "vitest": "^5.0.3"
+  }
+}

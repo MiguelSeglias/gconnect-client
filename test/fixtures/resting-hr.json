@@ -1,0 +1,12 @@
+{
+  "userProfileId": 1000001,
+  "allMetrics": {
+    "metricsMap": {
+      "WELLNESS_RESTING_HEART_RATE": [
+        { "value": 48.0, "calendarDate": "2026-01-01" },
+        { "value": null, "calendarDate": "2026-01-02" },
+        { "value": 50.0, "calendarDate": "2026-01-04" }
+      ]
+    }
+  }
+}
